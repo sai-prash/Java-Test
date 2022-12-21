@@ -30,13 +30,14 @@ public class ApiService {
     }
 
     public Response consumeQuota(int value) {
-        remaining = remaining - value;
+        
         Response response = new Response();
-        if(remaining < 0){
-            int excess = Math.abs(remaining);
+        if(remaining - value < 0){
+            int excess = Math.abs(remaining - value);
             response.setExcess(excess);
             return response;
         }
+        remaining = remaining - value;
         consumed +=value;
         response.setTotal(consumed);
         response.setRemaining(remaining);
