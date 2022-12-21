@@ -8,28 +8,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class ApiService {
 
-    private int initialValue = 1000;
-    private int consumed = 0;
-    private int remaining = initialValue - consumed;
-    private final Object lock = new Object();
-
-    public void updateInitialValue(int x) {
-        synchronized (lock) {
-            initialValue = x;
-        }
-    }
-    public void updateRemainingValue(int x) {
-        synchronized (lock) {
-            remaining = x;
-        }
-    }
-
-    public void updateConsumedValue(int x) {
-        synchronized (lock) {
-            consumed = x;
-        }
-    }
-
+    private static int initialValue = 1000;
+    private static int consumed = 0;
+    private static int remaining = initialValue - consumed;
+    // private final Object lock = new Object();
 
     public Response getConsumedDetails(){
         Response response = new Response();
@@ -40,27 +22,22 @@ public class ApiService {
 
     public Response resetQuota(int quota){
         Response response = new Response();
-        
-        updateInitialValue(quota);
-        updateRemainingValue(quota);
-        updateConsumedValue(0);
-
+        initialValue = remaining = quota;
+        consumed = 0;
         response.setTotal(consumed);
         response.setRemaining(initialValue);
         return response;
     }
 
-    public Response consumeQuota(int value) throws InterruptedException {
-        // Thread.sleep(5000);
-        // remaining = remaining - value;
+    public Response consumeQuota(int value) {
+        remaining = remaining - value;
         Response response = new Response();
-        if(remaining - value < 0){
-            response.setExcess(Math.abs(remaining - value));
+        if(remaining < 0){
+            int excess = Math.abs(remaining);
+            response.setExcess(excess);
             return response;
         }
-
-        updateRemainingValue(remaining - value);
-        updateConsumedValue(consumed+value);
+        consumed +=value;
         response.setTotal(consumed);
         response.setRemaining(remaining);
         return response;
