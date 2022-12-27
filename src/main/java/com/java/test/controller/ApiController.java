@@ -26,12 +26,7 @@ public class ApiController {
 
     @PostMapping("/consume")
     private ResponseEntity<Response> consumeQuota(@RequestBody Request request){
-        Response response  = null;
-        try{
-            response = service.consumeQuota(request.getValue());
-        }catch(Exception e){
-
-        }
+        Response response = service.consumeQuota(request.getValue());
        
         if(response.getExcess() != null){
             return new ResponseEntity<>(response,HttpStatus.SERVICE_UNAVAILABLE);

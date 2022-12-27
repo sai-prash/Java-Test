@@ -20,7 +20,7 @@ public class ApiService {
         return response;
     }
 
-    public Response resetQuota(int quota){
+    public synchronized Response resetQuota(int quota){
         Response response = new Response();
         initialValue = remaining = quota;
         consumed = 0;
@@ -29,7 +29,7 @@ public class ApiService {
         return response;
     }
 
-    public Response consumeQuota(int value) {
+    public synchronized Response consumeQuota(int value) {
         
         Response response = new Response();
         if(remaining - value < 0){
